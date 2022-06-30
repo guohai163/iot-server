@@ -60,6 +60,10 @@ public class IotApplication implements CommandLineRunner {
 	SessionManager sessionManager;
 
 
+	@Autowired
+	IdleCheckHandler idleCheckHandler;
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(IotApplication.class, args);
 	}
@@ -86,10 +90,15 @@ public class IotApplication implements CommandLineRunner {
 							ch.pipeline()
 									// 增加空闲检查器，规定读写各30秒没操作时触发
 									.addLast(new IdleStateHandler(30,30,0))
+									// netty要求ChannelHandler是每个线程一份的，就算指定bean的scope是原型也无效。
+									// 这里有三种解决方案
+									// 1. 每次都是new的，但把需要依赖spring完成初始化的传参进去
+									// 2. 使用一个ApplicationContextHolder工具类，在handler中通过applicationContext.getBean来获取
+									// 3. 如果能保证线程安全的情况下 给ChannelHandler增加@Sharable注解
 									// 增加一个json解码的
 									.addLast(new DecoderHandler(sessionManager))
 									//自定义实现的空闲处理
-									.addLast(new IdleCheckHandler());
+									.addLast(idleCheckHandler);
 						}
 					});
 

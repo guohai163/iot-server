@@ -2,17 +2,22 @@ package org.guohai.iot.handler;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 /**
  * 空闲检测器
+ * 如果增加@Sharable注解，该类必须是线程安全的
  * @author guohai
  */
+@Component
+@ChannelHandler.Sharable
 public class IdleCheckHandler extends ChannelDuplexHandler {
     /**
      * 日志

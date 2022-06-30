@@ -13,14 +13,16 @@ import java.util.Map;
 @Component
 public class SessionManager {
 
+    private static final int SERVER_CONNECT_NUM = 5000;
+
     /**
-     * 存储会话
+     * 存储会话,为了防止使用map时进行动态扩容，初始化时直接指定一个预估的单服务器连接数
      */
-    private final Map<Channel, SessionInfo> sessions = new HashMap<>();
+    private final Map<Channel, SessionInfo> sessions = new HashMap<>(SERVER_CONNECT_NUM);
     /**
      * 存储管道
      */
-    private final Map<String, Channel> channels = new HashMap<>();
+    private final Map<String, Channel> channels = new HashMap<>(SERVER_CONNECT_NUM);
 
     /**
      * 增加会话，当终端连接上来就进行注册。
