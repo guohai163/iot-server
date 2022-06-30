@@ -5,6 +5,7 @@ import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelConfig;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DefaultSocketChannelConfig;
 import io.netty.handler.codec.json.JsonObjectDecoder;
@@ -13,6 +14,7 @@ import org.guohai.iot.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,8 +31,11 @@ public class DecoderHandler extends JsonObjectDecoder {
     /**
      * 会话管理
      */
-    @Autowired
     SessionManager sessionManager;
+
+    public DecoderHandler(SessionManager sessionManager){
+        this.sessionManager = sessionManager;
+    }
 
     /**
      * 当有客户端注册时调用

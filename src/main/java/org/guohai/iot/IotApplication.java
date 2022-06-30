@@ -11,6 +11,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.guohai.iot.handler.DecoderHandler;
 import org.guohai.iot.handler.IdleCheckHandler;
 import org.guohai.iot.handler.StatusPringHandler;
+import org.guohai.iot.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,14 +47,18 @@ public class IotApplication implements CommandLineRunner {
 	 */
 	private final static int SERVER_PORT = 4100;
 
+	/**
+	 * 状态 handler
+	 */
 	@Autowired
 	StatusPringHandler statusPringHandler;
 
 	/**
-	 * 解码器
+	 * 会话管理
 	 */
 	@Autowired
-	DecoderHandler decoderHandler;
+	SessionManager sessionManager;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(IotApplication.class, args);
@@ -82,7 +87,7 @@ public class IotApplication implements CommandLineRunner {
 									// 增加空闲检查器，规定读写各30秒没操作时触发
 									.addLast(new IdleStateHandler(30,30,0))
 									// 增加一个json解码的
-									.addLast(decoderHandler)
+									.addLast(new DecoderHandler(sessionManager))
 									//自定义实现的空闲处理
 									.addLast(new IdleCheckHandler());
 						}
