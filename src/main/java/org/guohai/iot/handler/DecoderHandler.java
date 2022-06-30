@@ -27,7 +27,7 @@ public class DecoderHandler extends JsonObjectDecoder {
      * @param buffer bytebuff
      * @param index 此次包的开始点
      * @param length 此次包的长度
-     * @return
+     * @return 返回一个bytebuf做后续处理，如果不需要可以返回Unpooled.EMPTY_BUFFER
      */
     @Override
     protected ByteBuf extractObject(ChannelHandlerContext ctx, ByteBuf buffer,
@@ -37,11 +37,13 @@ public class DecoderHandler extends JsonObjectDecoder {
             // 这里的ByteBuf是netty重写的nio中的ByteBuffer性能更好
             ByteBuf byteBuf = buffer.slice(index, length);
 
+            // 把接收到的流转写成string字符串
             try (ByteBufInputStream inputStream = new ByteBufInputStream(byteBuf)) {
+
                 String message = byteBuf.readSlice(length).toString(0, length, CharsetUtil.UTF_8);
                 logger.info(message);
                 // 测试阶段直接回写数据
-                ctx.writeAndFlush(byteBuf);
+                ctx.writeAndFlush(Unpooled.copiedBuffer(message, CharsetUtil.UTF_8));
             }
 
         }catch (Exception e){

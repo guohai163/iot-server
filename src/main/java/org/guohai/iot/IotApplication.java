@@ -53,8 +53,8 @@ public class IotApplication implements CommandLineRunner {
 
 	/**
 	 * 实现自定义的run方法
-	 * @param args
-	 * @throws Exception
+	 * @param args 输入的参数
+	 * @throws Exception 抛出异常
 	 */
 	@Override
 	public void run(String... args) throws Exception {
@@ -69,8 +69,9 @@ public class IotApplication implements CommandLineRunner {
 					.channel(NioServerSocketChannel.class)
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
-						public void initChannel(SocketChannel ch) throws Exception {
+						public void initChannel(SocketChannel ch) {
 							ch.pipeline()
+									// 增加一个json解码的
 									.addLast(decoderHandler);
 						}
 					});
@@ -84,13 +85,12 @@ public class IotApplication implements CommandLineRunner {
 		}
 
 		// 在应用结束的时候，我们同时还要结束掉 worker和boos两个事件循环
-		Runtime.getRuntime().addShutdownHook(new Thread(){
-			@Override
-			public void run() {
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+				logger.info("程序结束，准备结束两个event loop");
 				workerGroup.shutdownGracefully();
 				bossGroup.shutdownGracefully();
 			}
-		});
+		));
 
 	}
 }
