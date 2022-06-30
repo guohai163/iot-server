@@ -7,13 +7,18 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.guohai.iot.handler.DecoderHandler;
+import org.guohai.iot.handler.IdleCheckHandler;
+import org.guohai.iot.handler.StatusPringHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 引导程序，同时我们要实现CommandLineRunner接口。
@@ -40,6 +45,9 @@ public class IotApplication implements CommandLineRunner {
 	 * 服务监听的端口
 	 */
 	private final static int SERVER_PORT = 4100;
+
+	@Autowired
+	StatusPringHandler statusPringHandler;
 
 	/**
 	 * 解码器
@@ -71,10 +79,18 @@ public class IotApplication implements CommandLineRunner {
 						@Override
 						public void initChannel(SocketChannel ch) {
 							ch.pipeline()
+									// 增加空闲检查器，规定读写各30秒没操作时触发
+									.addLast(new IdleStateHandler(30,30,0))
 									// 增加一个json解码的
-									.addLast(decoderHandler);
+									.addLast(decoderHandler)
+									//自定义实现的空闲处理
+									.addLast(new IdleCheckHandler());
 						}
 					});
+
+			// 为worker组设置一个定时器
+			workerGroup.next().scheduleAtFixedRate(statusPringHandler,1, 60, TimeUnit.SECONDS);
+
 			// 绑定端口
 			ChannelFuture channelFuture = bootstrap.bind(SERVER_PORT).sync();
 			logger.info("Server start listen port :" + SERVER_PORT);
