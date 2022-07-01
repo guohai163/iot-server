@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
  * 解决socket中常见的 粘包 半包问题
  * @author guohai
  */
-@Component
 public class DecoderHandler extends JsonObjectDecoder {
 
     private static final Logger logger = LoggerFactory.getLogger(DecoderHandler.class);
@@ -33,6 +32,10 @@ public class DecoderHandler extends JsonObjectDecoder {
      */
     SessionManager sessionManager;
 
+    /**
+     * 构造方法用来接收 sessionManager 对象
+     * @param sessionManager 会话管理
+     */
     public DecoderHandler(SessionManager sessionManager){
         this.sessionManager = sessionManager;
     }
@@ -44,7 +47,6 @@ public class DecoderHandler extends JsonObjectDecoder {
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         ChannelConfig config = ctx.channel().config();
-
         DefaultSocketChannelConfig socketConfig = (DefaultSocketChannelConfig)config;
         // 此处三个参数决定 延迟情况
         // 连接时间 、往返延迟、 带宽。
@@ -56,7 +58,6 @@ public class DecoderHandler extends JsonObjectDecoder {
         socketConfig.setPerformancePreferences(0,1,2);
         // NioSocketChannel在工作过程中，使用PooledByteBufAllocator来分配内存
         socketConfig.setAllocator(PooledByteBufAllocator.DEFAULT);
-
         super.channelRegistered(ctx);
 
         // 增加会话

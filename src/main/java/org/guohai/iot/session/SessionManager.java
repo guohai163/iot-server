@@ -13,6 +13,9 @@ import java.util.Map;
 @Component
 public class SessionManager {
 
+    /**
+     * 当前服务器预估的最大连接数
+     */
     private static final int SERVER_CONNECT_NUM = 5000;
 
     /**
@@ -33,6 +36,20 @@ public class SessionManager {
         SessionInfo session = new SessionInfo();
         session.setChannel(channel);
         sessions.put(channel, session);
+    }
+
+    /**
+     * 终端登录后补充会话信息,现时增加channel
+     * @param channel channel
+     * @param devId 设备ID
+     * @param version 设备版本
+     */
+    public void setSession(Channel channel, String devId, String version){
+        SessionInfo session = sessions.get(channel);
+        session.setVersion(version);
+        session.setDevId(devId);
+
+        channels.put(devId, channel);
     }
 
     /**
