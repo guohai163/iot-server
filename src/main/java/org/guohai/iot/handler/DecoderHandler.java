@@ -1,21 +1,20 @@
 package org.guohai.iot.handler;
 
+import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelConfig;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DefaultSocketChannelConfig;
 import io.netty.handler.codec.json.JsonObjectDecoder;
 import io.netty.util.CharsetUtil;
+import org.guohai.iot.event.MainEventProducer;
+import org.guohai.iot.protocol.ProtocolBase;
 import org.guohai.iot.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * 解码器，用来接收从socket来的数据流
@@ -33,11 +32,17 @@ public class DecoderHandler extends JsonObjectDecoder {
     SessionManager sessionManager;
 
     /**
+     * 协议管理
+     */
+    MainEventProducer mainEventProducer;
+
+    /**
      * 构造方法用来接收 sessionManager 对象
      * @param sessionManager 会话管理
      */
-    public DecoderHandler(SessionManager sessionManager){
+    public DecoderHandler(SessionManager sessionManager, MainEventProducer mainEventProducer){
         this.sessionManager = sessionManager;
+        this.mainEventProducer = mainEventProducer;
     }
 
     /**
@@ -85,8 +90,12 @@ public class DecoderHandler extends JsonObjectDecoder {
 
                 String message = byteBuf.readSlice(length).toString(0, length, CharsetUtil.UTF_8);
                 logger.info(message);
-                // 测试阶段直接回写数据
+                // TODO:测试阶段直接回写数据
                 ctx.writeAndFlush(Unpooled.copiedBuffer(message, CharsetUtil.UTF_8));
+
+                // 向队列发布服务
+                mainEventProducer.onData(ctx.channel(), message);
+
             }
 
         }catch (Exception e){

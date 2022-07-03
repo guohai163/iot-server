@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.guohai.iot.event.MainEventProducer;
 import org.guohai.iot.handler.DecoderHandler;
 import org.guohai.iot.handler.IdleCheckHandler;
 import org.guohai.iot.handler.StatusPringHandler;
@@ -63,6 +64,10 @@ public class IotApplication implements CommandLineRunner {
 	@Autowired
 	IdleCheckHandler idleCheckHandler;
 
+	@Autowired
+	MainEventProducer mainEventProducer;
+
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(IotApplication.class, args);
@@ -98,7 +103,7 @@ public class IotApplication implements CommandLineRunner {
 									// 2. 使用一个ApplicationContextHolder工具类，在handler中通过applicationContext.getBean来获取
 									// 3. 如果能保证线程安全的情况下 给ChannelHandler增加@Sharable注解
 									// 增加一个json解码的
-									.addLast("decoder", new DecoderHandler(sessionManager))
+									.addLast("decoder", new DecoderHandler(sessionManager, mainEventProducer))
 									//自定义实现的空闲处理
 									.addLast("idleCheck", idleCheckHandler);
 						}
