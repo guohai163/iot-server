@@ -2,6 +2,7 @@ package org.guohai.iot.handler;
 
 import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
@@ -31,8 +32,9 @@ public class EncoderHandler extends ChannelOutboundHandlerAdapter {
             AnswerProtocol message = (AnswerProtocol)msg;
 
             String json = new Gson().toJson(message);
-            ByteBuf byteBuf = ctx.alloc().directBuffer(json.length(), json.length());
-            System.out.println(byteBuf);
+            ByteBuf byteBuf = ctx.alloc().buffer(json.length(), json.length());
+
+
             byte[] bytes = json.getBytes(CharsetUtil.UTF_8);
             byteBuf.writeBytes(bytes);
 
