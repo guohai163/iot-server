@@ -24,6 +24,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DecoderHandler extends JsonObjectDecoder {
 
+    /**
+     * 日志
+     */
     private static final Logger logger = LoggerFactory.getLogger(DecoderHandler.class);
 
     /**
@@ -90,8 +93,7 @@ public class DecoderHandler extends JsonObjectDecoder {
 
                 String message = byteBuf.readSlice(length).toString(0, length, CharsetUtil.UTF_8);
                 logger.info(message);
-                // TODO:测试阶段直接回写数据
-                ctx.writeAndFlush(Unpooled.copiedBuffer(message, CharsetUtil.UTF_8));
+
 
                 // 向队列发布服务
                 mainEventProducer.onData(ctx.channel(), message);

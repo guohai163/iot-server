@@ -1,5 +1,7 @@
 package org.guohai.iot.event;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * 事件类型
  * @author guohai
@@ -13,7 +15,11 @@ public enum EventType {
     /**
      * 客户端注册
      */
+    @SerializedName("10")
     CLIENT_REGISTER,
+
+    @SerializedName("11")
+    CLIENT_REGISTER_ANSWER,
 
     /**
      * 心跳检查

@@ -19,7 +19,7 @@ public class EventInfo {
     private Channel channel;
 
     /**
-     * 协议类型
+     * 协议原文
      */
-    private int protocoType;
+    private String message;
 }

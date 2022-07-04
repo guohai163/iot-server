@@ -26,7 +26,6 @@ public class MainEventProducer {
     /**
      * 主事件消费者
      */
-    @Autowired
     MainEventHandler mainEventHandler;
 
     /**
@@ -34,7 +33,8 @@ public class MainEventProducer {
      */
     private final int INIT_LOGIC_EVENT_CAPACITY = 1024 ;
 
-    public MainEventProducer(){
+    public MainEventProducer(MainEventHandler mainEventHandler){
+        this.mainEventHandler = mainEventHandler;
         // 初始化
         disruptor = new Disruptor<>(EventInfo::new, INIT_LOGIC_EVENT_CAPACITY,
                 DaemonThreadFactory.INSTANCE);
@@ -59,6 +59,7 @@ public class MainEventProducer {
             EventInfo newEventInfo = ringBuffer.get(sequence);
             newEventInfo.setEventType(protocolBase.getMsgType());
             newEventInfo.setChannel(channel);
+            newEventInfo.setMessage(message);
         }finally {
             ringBuffer.publish(sequence);
         }

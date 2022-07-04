@@ -1,22 +1,25 @@
 package org.guohai.iot.protocol;
 
-import io.netty.channel.Channel;
 import lombok.Data;
 import org.guohai.iot.event.EventType;
 
 /**
- * @author guohai
+ * 应答协议包
  */
 @Data
-public class ProtocolBase {
+public class AnswerProtocol {
 
     /**
      * 消息类型
      */
     protected EventType msgType;
-
     /**
      * 通讯号
      */
     protected long txNo;
+
+    /**
+     * 响应结果
+     */
+    protected String result;
 }

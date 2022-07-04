@@ -10,6 +10,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.guohai.iot.event.MainEventProducer;
 import org.guohai.iot.handler.DecoderHandler;
+import org.guohai.iot.handler.EncoderHandler;
 import org.guohai.iot.handler.IdleCheckHandler;
 import org.guohai.iot.handler.StatusPringHandler;
 import org.guohai.iot.session.SessionManager;
@@ -104,6 +105,8 @@ public class IotApplication implements CommandLineRunner {
 									// 3. 如果能保证线程安全的情况下 给ChannelHandler增加@Sharable注解
 									// 增加一个json解码的
 									.addLast("decoder", new DecoderHandler(sessionManager, mainEventProducer))
+									// 编码器
+									.addLast("encoder", new EncoderHandler())
 									//自定义实现的空闲处理
 									.addLast("idleCheck", idleCheckHandler);
 						}
