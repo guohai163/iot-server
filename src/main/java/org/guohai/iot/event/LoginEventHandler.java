@@ -1,32 +1,27 @@
-package org.guohai.iot.protocol;
+package org.guohai.iot.event;
 
 import io.netty.channel.Channel;
-import lombok.Data;
-import org.guohai.iot.event.EventType;
+import org.guohai.iot.protocol.AnswerProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-
-
-
+import org.springframework.stereotype.Component;
 
 /**
+ * 登录事件
  * @author guohai
  */
-@Data
-public class LoginProtocolHandler extends ProtocolBase implements ProtocolHandler{
+@Component
+public class LoginEventHandler implements IotEventHandler {
 
     /**
      * 日志
      */
-    private static final Logger logger = LoggerFactory.getLogger(LoginProtocolHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoginEventHandler.class);
 
-    private String version;
-
-    private String devId;
-
-    private String sign;
-
+    /**
+     * 密钥
+     */
     @Value("${netty.key}")
     private String key;
 
@@ -35,10 +30,9 @@ public class LoginProtocolHandler extends ProtocolBase implements ProtocolHandle
      *
      * @param channel socket channel
      */
-    public void onEvent(Channel channel){
-
-
-        logger.info("LoginProtocolHandler进来的参数：devId = %s", devId);
+    @Override
+    public void onEvent(Channel channel) {
+        logger.info("这是一个设备的登陆包");
         // 验签
 
         // 处理业务
@@ -46,8 +40,6 @@ public class LoginProtocolHandler extends ProtocolBase implements ProtocolHandle
         // 向客户端发送应答数据包
         AnswerProtocol answerProtocol = new AnswerProtocol();
         answerProtocol.setMsgType(EventType.CLIENT_REGISTER_ANSWER);
-        answerProtocol.setTxNo(this.txNo);
         channel.writeAndFlush(answerProtocol);
     }
-
 }

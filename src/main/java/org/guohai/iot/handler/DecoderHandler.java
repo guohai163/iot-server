@@ -16,6 +16,8 @@ import org.guohai.iot.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 /**
  * 解码器，用来接收从socket来的数据流
  * 这里我们继承下 JsonObjectDecoder 类，可以帮我们做json的自动解码
@@ -104,5 +106,21 @@ public class DecoderHandler extends JsonObjectDecoder {
             e.printStackTrace();
         }
         return Unpooled.EMPTY_BUFFER;
+    }
+
+    /**
+     * 解码失败时
+     * @param ctx
+     * @param cause
+     */
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        try {
+            InetSocketAddress remoteAddress = (InetSocketAddress)ctx.channel().remoteAddress();
+
+            logger.error("解码异常捕获:[{}:{}]",remoteAddress.getAddress().getHostAddress(),remoteAddress.getPort(), cause);
+        } finally {
+            ctx.channel().close();
+        }
     }
 }

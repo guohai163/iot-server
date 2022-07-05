@@ -7,6 +7,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
+import org.guohai.iot.event.EventType;
+import org.guohai.iot.protocol.HeartbeatProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,7 +41,10 @@ public class IdleCheckHandler extends ChannelDuplexHandler {
             } else if (e.state() == IdleState.WRITER_IDLE) {
                 logger.debug("写空闲，下行一条心跳保持连接");
                 // TODO: 下行数据先写死
-                ctx.channel().writeAndFlush(Unpooled.copiedBuffer("{\"msgType\": 20, \"txNo\": \"1234567890123\"}\n", CharsetUtil.UTF_8));
+                HeartbeatProtocol heartbeatProtocol = new HeartbeatProtocol();
+                heartbeatProtocol.setMsgType(EventType.HEART_BEAT);
+                heartbeatProtocol.setTxNo(System.currentTimeMillis());
+                ctx.channel().writeAndFlush(heartbeatProtocol);
             }
         }
     }

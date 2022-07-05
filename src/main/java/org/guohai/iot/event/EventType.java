@@ -24,6 +24,7 @@ public enum EventType {
     /**
      * 心跳检查
      */
+    @SerializedName("20")
     HEART_BEAT,
 
     /**

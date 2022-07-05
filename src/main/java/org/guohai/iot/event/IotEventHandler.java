@@ -1,4 +1,4 @@
-package org.guohai.iot.protocol;
+package org.guohai.iot.event;
 
 import io.netty.channel.Channel;
 
@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
  * 协议处理的接口
  * @author guohai
  */
-public interface ProtocolHandler {
+public interface IotEventHandler {
 
     /**
      * 事件处理
