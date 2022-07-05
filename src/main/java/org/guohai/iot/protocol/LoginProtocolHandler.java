@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
  * @author guohai
  */
 @Data
-public class LoginProtocolHandler extends ProtocolBase{
+public class LoginProtocolHandler extends ProtocolBase implements ProtocolHandler{
 
     /**
      * 日志
@@ -30,7 +30,14 @@ public class LoginProtocolHandler extends ProtocolBase{
     @Value("${netty.key}")
     private String key;
 
+    /**
+     * 事件处理
+     *
+     * @param channel socket channel
+     */
     public void onEvent(Channel channel){
+
+
         logger.info("LoginProtocolHandler进来的参数：devId = %s", devId);
         // 验签
 
