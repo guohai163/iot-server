@@ -53,16 +53,20 @@ public class LoginEventHandler implements IotEventHandler {
         if(null != oldChannel){
             // 已经存在 旧设备，准备先踢出旧设备
             SessionInfo oldSessionInfo= sessionManager.getSession(oldChannel);
-//            oldChannel.c
+            oldChannel.close();
+            sessionManager.removeSession(oldChannel);
         }
 
         sessionManager.setSession(channel, loginProtocol.getDevId(), loginProtocol.getVersion());
         sessionManager.addChannel(loginProtocol.getDevId(), channel);
 
-        // 向客户端发送应答数据包
+            // 向客户端发送应答数据包
         AnswerProtocol answerProtocol = new AnswerProtocol();
         answerProtocol.setMsgType(EventType.CLIENT_REGISTER_ANSWER);
         answerProtocol.setTxNo(loginProtocol.getTxNo());
         channel.writeAndFlush(answerProtocol);
+
+
+
     }
 }

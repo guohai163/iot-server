@@ -42,8 +42,6 @@ public class IdleCheckHandler extends ChannelDuplexHandler {
                 logger.debug("写空闲，下行一条心跳保持连接");
                 // TODO: 下行数据先写死
                 HeartbeatProtocol heartbeatProtocol = new HeartbeatProtocol();
-                heartbeatProtocol.setMsgType(EventType.HEART_BEAT);
-                heartbeatProtocol.setTxNo(System.currentTimeMillis());
                 ctx.channel().writeAndFlush(heartbeatProtocol);
             }
         }

@@ -41,11 +41,11 @@ public class StatusPringHandler implements Runnable {
     public void run() {
         logger.info(
                 "\n"+
-                "+---------+---------+----------------+---------------+-------------+---------------+-------------+---------------+\n" +
-                "| session | channel | main disruptor | log disruptor |   in pack   |    in byte    |   out pack  |    out byte   |\n" +
-                "+---------+---------+----------------+---------------+-------------+---------------+-------------+---------------+\n"+
-                "| "+String.format("%7d",sessionManager.getSessionCount())+" | "+String.format("%7d",sessionManager.getChannelCount())+" |        "+String.format("%7d",0)+" |       "+String.format("%7d",0)+" |     " +
+                "+---------+---------+------------+-----------+-------------+---------------+-------------+---------------+\n" +
+                "| session | channel | main queue | log queue |   in pack   |    in byte    |   out pack  |    out byte   |\n" +
+                "+---------+---------+------------+-----------+-------------+---------------+-------------+---------------+\n"+
+                "| "+String.format("%7d",sessionManager.getSessionCount())+" | "+String.format("%7d",sessionManager.getChannelCount())+" |    "+String.format("%7d",0)+" |   "+String.format("%7d",0)+" |     " +
                         String.format("%7d", TrafficStatistics.getInPack())+" |     "+String.format("%9d", TrafficStatistics.getInByte())+" |     "+String.format("%7d", TrafficStatistics.getOutPack())+" |     "+String.format("%9d", TrafficStatistics.getOutByte())+" |\n"+
-                "+---------+---------+----------------+---------------+-------------+---------------+-------------+---------------+\n");
+                "+---------+---------+------------+-----------+-------------+---------------+-------------+---------------+\n");
     }
 }
