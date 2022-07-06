@@ -10,15 +10,6 @@ import org.guohai.iot.event.EventType;
 @Data
 public class AnswerProtocol extends ProtocolBase {
 
-//    /**
-//     * 消息类型
-//     */
-//    protected EventType msgType;
-//    /**
-//     * 通讯号
-//     */
-//    protected long txNo;
-
     /**
      * 响应结果
      */

@@ -28,6 +28,11 @@ public enum EventType {
     HEART_BEAT,
 
     /**
+     * 心跳检查
+     */
+    @SerializedName("21")
+    HEART_BEAT_ANSWER,
+    /**
      * 客户端发过来的协议包
      */
     CLIENT_PROTO_COMMING,

@@ -9,6 +9,7 @@ import io.netty.channel.ChannelPromise;
 import io.netty.util.CharsetUtil;
 import org.guohai.iot.protocol.AnswerProtocol;
 import org.guohai.iot.protocol.ProtocolBase;
+import org.guohai.iot.session.TrafficStatistics;
 
 /**
  * 出站编码器
@@ -30,15 +31,14 @@ public class EncoderHandler extends ChannelOutboundHandlerAdapter {
         }
 
         if(msg instanceof ProtocolBase) {
-//            AnswerProtocol message = (AnswerProtocol)msg;
 
             String json = new Gson().toJson(msg);
             ByteBuf byteBuf = ctx.alloc().buffer(json.length(), json.length());
 
-
             byte[] bytes = json.getBytes(CharsetUtil.UTF_8);
             byteBuf.writeBytes(bytes);
-
+            // 出站计数器
+            TrafficStatistics.addOutPack(byteBuf.readableBytes());
             super.write(ctx,byteBuf,promise);
         }else{
 

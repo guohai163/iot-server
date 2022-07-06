@@ -7,12 +7,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.json.JsonObjectDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.guohai.iot.event.MainEventProducer;
-import org.guohai.iot.handler.DecoderHandler;
-import org.guohai.iot.handler.EncoderHandler;
-import org.guohai.iot.handler.IdleCheckHandler;
-import org.guohai.iot.handler.StatusPringHandler;
+import org.guohai.iot.handler.*;
 import org.guohai.iot.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +66,14 @@ public class IotApplication implements CommandLineRunner {
 	@Autowired
 	MainEventProducer mainEventProducer;
 
+	@Autowired
+	QuitHandler quitHandler;
+
+	@Autowired
+	IotProtocolHandler iotProtocolHandler;
+
+	@Autowired
+	InitChannelHandler initChannelHandler;
 
 
 	public static void main(String[] args) {
@@ -94,19 +100,24 @@ public class IotApplication implements CommandLineRunner {
 						@Override
 						public void initChannel(SocketChannel ch) {
 							ch.pipeline()
-									// 链路 head <=> IdleState <=> decoder <=> idleCheck <=> tail
-									// 入站 从head到tail ，出站 从tail到head
-									// 增加空闲检查器，规定读写各30秒没操作时触发
-									.addLast("IdleState", new IdleStateHandler(30,30,0))
 									// netty要求ChannelHandler是每个线程一份的，就算指定bean的scope是原型也无效。
 									// 这里有三种解决方案
 									// 1. 每次都是new的，但把需要依赖spring完成初始化的传参进去
 									// 2. 使用一个ApplicationContextHolder工具类，在handler中通过applicationContext.getBean来获取
 									// 3. 如果能保证线程安全的情况下 给ChannelHandler增加@Sharable注解
 									// 增加一个json解码的
-									.addLast("decoder", new DecoderHandler(sessionManager, mainEventProducer))
+//									.addLast("decoder", new DecoderHandler(sessionManager, mainEventProducer))
+									.addLast("initChannel",initChannelHandler)
+									.addLast("jsonDecoder", new JsonObjectDecoder())
+									.addLast("iotProtocol", iotProtocolHandler)
 									// 编码器
 									.addLast("encoder", new EncoderHandler())
+									// 处理客户端退出时的事件
+									.addLast("quit", quitHandler)
+									// 链路 head <=> IdleState <=> decoder <=> idleCheck <=> tail
+									// 入站 从head到tail ，出站 从tail到head
+									// 增加空闲检查器，规定读写各30秒没操作时触发
+									.addLast("IdleState", new IdleStateHandler(30,30,0))
 									//自定义实现的空闲处理
 									.addLast("idleCheck", idleCheckHandler);
 						}

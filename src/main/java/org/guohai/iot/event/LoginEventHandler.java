@@ -1,9 +1,14 @@
 package org.guohai.iot.event;
 
+import com.google.gson.Gson;
 import io.netty.channel.Channel;
 import org.guohai.iot.protocol.AnswerProtocol;
+import org.guohai.iot.protocol.LoginProtocol;
+import org.guohai.iot.session.SessionInfo;
+import org.guohai.iot.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +25,12 @@ public class LoginEventHandler implements IotEventHandler {
     private static final Logger logger = LoggerFactory.getLogger(LoginEventHandler.class);
 
     /**
+     * 会话管理
+     */
+    @Autowired
+    SessionManager sessionManager;
+
+    /**
      * 密钥
      */
     @Value("${netty.key}")
@@ -27,19 +38,31 @@ public class LoginEventHandler implements IotEventHandler {
 
     /**
      * 事件处理
-     *
      * @param channel socket channel
+     * @param message 数据包
      */
-    @Override
-    public void onEvent(Channel channel) {
+    public void onEvent(Channel channel, String message) {
         logger.info("这是一个设备的登陆包");
-        // 验签
+        // TODO:验签，验签不通过的直接踢掉
 
         // 处理业务
+        LoginProtocol loginProtocol = new Gson().fromJson(message, LoginProtocol.class);
+
+        // 通过设备 Id 获取旧连接
+        Channel oldChannel = sessionManager.getChannel(loginProtocol.getDevId());
+        if(null != oldChannel){
+            // 已经存在 旧设备，准备先踢出旧设备
+            SessionInfo oldSessionInfo= sessionManager.getSession(oldChannel);
+//            oldChannel.c
+        }
+
+        sessionManager.setSession(channel, loginProtocol.getDevId(), loginProtocol.getVersion());
+        sessionManager.addChannel(loginProtocol.getDevId(), channel);
 
         // 向客户端发送应答数据包
         AnswerProtocol answerProtocol = new AnswerProtocol();
         answerProtocol.setMsgType(EventType.CLIENT_REGISTER_ANSWER);
+        answerProtocol.setTxNo(loginProtocol.getTxNo());
         channel.writeAndFlush(answerProtocol);
     }
 }

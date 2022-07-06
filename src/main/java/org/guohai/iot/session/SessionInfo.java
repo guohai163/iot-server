@@ -5,6 +5,7 @@ import lombok.Data;
 
 /**
  * 会话的基本数据
+ * @author guohai
  */
 @Data
 public class SessionInfo {

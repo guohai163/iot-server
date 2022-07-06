@@ -39,6 +39,6 @@ public class MainEventHandler implements EventHandler<EventInfo> {
 
         IotEventHandler eventHandler = eventMap.get(eventInfo.getEventType());
 
-        eventHandler.onEvent(eventInfo.getChannel());
+        eventHandler.onEvent(eventInfo.getChannel(), eventInfo.getMessage());
     }
 }

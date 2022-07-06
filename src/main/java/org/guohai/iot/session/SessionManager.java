@@ -3,8 +3,8 @@ package org.guohai.iot.session;
 import io.netty.channel.Channel;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 会话管理
@@ -21,11 +21,11 @@ public class SessionManager {
     /**
      * 存储会话,为了防止使用map时进行动态扩容，初始化时直接指定一个预估的单服务器连接数
      */
-    private final Map<Channel, SessionInfo> sessions = new HashMap<>(SERVER_CONNECT_NUM);
+    private final Map<Channel, SessionInfo> sessions = new ConcurrentHashMap<>(SERVER_CONNECT_NUM);
     /**
      * 存储管道
      */
-    private final Map<String, Channel> channels = new HashMap<>(SERVER_CONNECT_NUM);
+    private final Map<String, Channel> channels = new ConcurrentHashMap<>(SERVER_CONNECT_NUM);
 
     /**
      * 增加会话，当终端连接上来就进行注册。
@@ -36,6 +36,10 @@ public class SessionManager {
         SessionInfo session = new SessionInfo();
         session.setChannel(channel);
         sessions.put(channel, session);
+    }
+
+    public void addChannel(String devId, Channel channel){
+        channels.put(devId, channel);
     }
 
     /**

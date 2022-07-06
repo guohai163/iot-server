@@ -11,6 +11,8 @@ public interface IotEventHandler {
     /**
      * 事件处理
      * @param channel socket channel
+     * @param message 数据包
      */
-    void onEvent(Channel channel);
+    void onEvent(Channel channel, String message);
+
 }
