@@ -40,6 +40,7 @@ public class HeartbeatEventHandler implements IotEventHandler{
     public void onEvent(Channel channel, String message) {
         logger.info("这是一个心跳包");
         // 检查下客户端是否登录，如果没登录，要踢掉
+        // 对于 心跳包自己检查完毕即可，不用通知后端业务
         SessionInfo sessionInfo = sessionManager.getSession(channel);
         if(null == sessionInfo){
             // 没有会话信息，直接踢掉

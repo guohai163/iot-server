@@ -59,8 +59,10 @@ public class LoginEventHandler implements IotEventHandler {
 
         sessionManager.setSession(channel, loginProtocol.getDevId(), loginProtocol.getVersion());
         sessionManager.addChannel(loginProtocol.getDevId(), channel);
+        // TODO:本地处理完后需要通过 rabbitMQ 一类的网络队列向后通知有新客户端上线事件。
+        //  同时需要考虑当有多份前置服务端时下行消息要保证送到正确的MQ队列
 
-            // 向客户端发送应答数据包
+        // 向客户端发送应答数据包
         AnswerProtocol answerProtocol = new AnswerProtocol();
         answerProtocol.setMsgType(EventType.CLIENT_REGISTER_ANSWER);
         answerProtocol.setTxNo(loginProtocol.getTxNo());
