@@ -36,7 +36,7 @@ public class IdleCheckHandler extends ChannelDuplexHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE) {
-                // TODO: 读空闲，准备断开客户端。同时检查该客户端，如果为已login终端，还需要通过RMQ向后进行通知。阻止后续消息
+                // TODO: 读空闲，准备断开客户端。同时检查该客户端，如果为已login终端，还需要通过RMQ向后进行通知。阻止后续消息wq
                 logger.debug("读空闲，准备断开客户端");
             } else if (e.state() == IdleState.WRITER_IDLE) {
                 logger.debug("写空闲，下行一条心跳保持连接");
