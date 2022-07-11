@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.CharsetUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.guohai.iot.event.EventType;
 import org.guohai.iot.protocol.HeartbeatProtocol;
 import org.slf4j.Logger;
@@ -18,13 +19,11 @@ import org.springframework.stereotype.Component;
  * 如果增加@Sharable注解，该类必须是线程安全的
  * @author guohai
  */
+@Slf4j
 @Component
 @ChannelHandler.Sharable
 public class IdleCheckHandler extends ChannelDuplexHandler {
-    /**
-     * 日志
-     */
-    private static final Logger logger = LoggerFactory.getLogger(StatusPringHandler.class);
+
 
     /**
      * 空闲会话检测
@@ -36,10 +35,10 @@ public class IdleCheckHandler extends ChannelDuplexHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.READER_IDLE) {
-                // TODO: 读空闲，准备断开客户端。同时检查该客户端，如果为已login终端，还需要通过RMQ向后进行通知。阻止后续消息wq
-                logger.debug("读空闲，准备断开客户端");
+                // TODO: 读空闲，准备断开客户端
+                log.debug("读空闲，准备断开客户端");
             } else if (e.state() == IdleState.WRITER_IDLE) {
-                logger.debug("写空闲，下行一条心跳保持连接");
+                log.debug("写空闲，下行一条心跳保持连接");
                 // TODO: 下行数据先写死
                 HeartbeatProtocol heartbeatProtocol = new HeartbeatProtocol();
                 ctx.channel().writeAndFlush(heartbeatProtocol);

@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import io.netty.util.CharsetUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.guohai.iot.event.MainEventProducer;
 import org.guohai.iot.session.TrafficStatistics;
 import org.slf4j.Logger;
@@ -17,14 +18,11 @@ import java.util.List;
  * 协议包解析
  * @author guohai
  */
+@Slf4j
 @Component
 @ChannelHandler.Sharable
 public class IotProtocolHandler extends MessageToMessageDecoder<ByteBuf> {
 
-    /**
-     * 日志
-     */
-    private static final Logger logger = LoggerFactory.getLogger(IotProtocolHandler.class);
 
     /**
      * 主事件循环
@@ -52,7 +50,7 @@ public class IotProtocolHandler extends MessageToMessageDecoder<ByteBuf> {
             TrafficStatistics.addInPack(msg.readableBytes());
             // 把接收到的流转写成string字符串
             String message = msg.toString(CharsetUtil.UTF_8);
-            logger.info(message);
+            log.info(message);
 
             // 向队列发布服务
             mainEventProducer.onData(ctx.channel(), message);

@@ -2,6 +2,7 @@ package org.guohai.iot.event;
 
 import com.google.gson.Gson;
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.guohai.iot.protocol.AnswerProtocol;
 import org.guohai.iot.protocol.HeartbeatProtocol;
 import org.guohai.iot.session.SessionInfo;
@@ -14,13 +15,10 @@ import org.springframework.stereotype.Component;
  * 心跳事件处理
  * @author guohai
  */
+@Slf4j
 @Component
 public class HeartbeatEventHandler implements IotEventHandler{
 
-    /**
-     * 日志
-     */
-    private static final Logger logger = LoggerFactory.getLogger(HeartbeatEventHandler.class);
 
     /**
      * 会话管理
@@ -38,7 +36,7 @@ public class HeartbeatEventHandler implements IotEventHandler{
      */
     @Override
     public void onEvent(Channel channel, String message) {
-        logger.info("这是一个心跳包");
+        log.info("这是一个心跳包");
         // 检查下客户端是否登录，如果没登录，要踢掉
         // 对于 心跳包自己检查完毕即可，不用通知后端业务
         SessionInfo sessionInfo = sessionManager.getSession(channel);

@@ -9,11 +9,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.json.JsonObjectDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.guohai.iot.event.MainEventProducer;
 import org.guohai.iot.handler.*;
 import org.guohai.iot.session.SessionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -26,13 +25,9 @@ import java.util.concurrent.TimeUnit;
  * 同时实现run方法，会在所有 Spring Beans 都初始化之后，SpringApplication.run() 之前执行
  * @author guohai
  */
+@Slf4j
 @SpringBootApplication
 public class IotApplication implements CommandLineRunner {
-
-	/**
-	 * 日志
-	 */
-	private static final Logger logger = LoggerFactory.getLogger(IotApplication.class);
 
 	/**
 	 * 主事件，负责连接。单一线程就行
@@ -125,10 +120,9 @@ public class IotApplication implements CommandLineRunner {
 
 			// 为worker组设置一个定时器
 			workerGroup.next().scheduleAtFixedRate(statusPringHandler,1, 60, TimeUnit.SECONDS);
-
 			// 绑定端口
 			ChannelFuture channelFuture = bootstrap.bind(SERVER_PORT).sync();
-			logger.info("Server start listen port :" + SERVER_PORT);
+			log.info("Server start listen port :" + SERVER_PORT);
 			channelFuture.channel().closeFuture().sync();
 		}finally {
 			workerGroup.shutdownGracefully();
@@ -137,7 +131,7 @@ public class IotApplication implements CommandLineRunner {
 
 		// 在应用结束的时候，我们同时还要结束掉 worker和boos两个事件循环
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-				logger.info("程序结束，准备结束两个event loop");
+				log.info("程序结束，准备结束两个event loop");
 				workerGroup.shutdownGracefully();
 				bossGroup.shutdownGracefully();
 			}

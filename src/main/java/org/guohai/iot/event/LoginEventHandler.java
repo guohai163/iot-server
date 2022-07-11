@@ -2,6 +2,7 @@ package org.guohai.iot.event;
 
 import com.google.gson.Gson;
 import io.netty.channel.Channel;
+import lombok.extern.slf4j.Slf4j;
 import org.guohai.iot.protocol.AnswerProtocol;
 import org.guohai.iot.protocol.LoginProtocol;
 import org.guohai.iot.session.SessionInfo;
@@ -16,13 +17,11 @@ import org.springframework.stereotype.Component;
  * 登录事件
  * @author guohai
  */
+@Slf4j
 @Component
 public class LoginEventHandler implements IotEventHandler {
 
-    /**
-     * 日志
-     */
-    private static final Logger logger = LoggerFactory.getLogger(LoginEventHandler.class);
+
 
     /**
      * 会话管理
@@ -42,7 +41,7 @@ public class LoginEventHandler implements IotEventHandler {
      * @param message 数据包
      */
     public void onEvent(Channel channel, String message) {
-        logger.info("这是一个设备的登陆包");
+        log.info("这是一个设备的登陆包");
         // TODO:验签，验签不通过的直接踢掉
 
         // 处理业务

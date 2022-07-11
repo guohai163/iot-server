@@ -1,5 +1,6 @@
 package org.guohai.iot.handler;
 
+import lombok.extern.slf4j.Slf4j;
 import org.guohai.iot.session.SessionManager;
 import org.guohai.iot.session.TrafficStatistics;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  *
  * @author guohai
  */
+@Slf4j
 @Component
 public class StatusPringHandler implements Runnable {
 
@@ -20,10 +22,7 @@ public class StatusPringHandler implements Runnable {
      */
     @Autowired
     SessionManager sessionManager;
-    /**
-     * 日志
-     */
-    private static final Logger logger = LoggerFactory.getLogger(StatusPringHandler.class);
+
 
 
     /**
@@ -39,7 +38,7 @@ public class StatusPringHandler implements Runnable {
      */
     @Override
     public void run() {
-        logger.info(
+        log.info(
                 "\n"+
                 "+---------+---------+------------+-----------+-------------+---------------+-------------+---------------+\n" +
                 "| session | channel | main queue | log queue |   in pack   |    in byte    |   out pack  |    out byte   |\n" +
