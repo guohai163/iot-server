@@ -8,8 +8,6 @@ import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.guohai.iot.event.MainEventProducer;
 import org.guohai.iot.session.TrafficStatistics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
