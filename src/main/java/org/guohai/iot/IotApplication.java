@@ -1,8 +1,10 @@
 package org.guohai.iot;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -91,6 +93,19 @@ public class IotApplication implements CommandLineRunner {
 					// 在mac下可以使用KQueueServerSocketChannel
 					// 在这里我们用比较通用的NioServerSocketChannel实现
 					.channel(NioServerSocketChannel.class)
+					// option针对boss线程
+					// 是否可重复使用地址和端口？docker环境中可以设置为false
+					.option(ChannelOption.SO_REUSEADDR,true)
+					// 等待处理的队列大小，
+					.option(ChannelOption.SO_BACKLOG, 400)
+					// 接收缓存区
+					.option(ChannelOption.SO_RCVBUF,64*1024)
+					// childOption针对work线程
+					.childOption(ChannelOption.TCP_NODELAY, true)
+					.childOption(ChannelOption.SO_KEEPALIVE, false)
+					// 阻塞客户的close函数，尽可能的发送数据
+					.childOption(ChannelOption.SO_LINGER,0)
+					.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						public void initChannel(SocketChannel ch) {

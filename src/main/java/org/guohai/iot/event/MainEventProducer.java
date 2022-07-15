@@ -5,7 +5,6 @@ import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.util.DaemonThreadFactory;
 import org.guohai.iot.protocol.ProtocolBase;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.netty.channel.Channel;
@@ -70,5 +69,9 @@ public class MainEventProducer {
      */
     public void stop(){
         disruptor.shutdown();
+    }
+
+    public long getRingBufferSize(){
+        return disruptor.getCursor();
     }
 }

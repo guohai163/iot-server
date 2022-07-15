@@ -1,6 +1,7 @@
 package org.guohai.iot.handler;
 
 import lombok.extern.slf4j.Slf4j;
+import org.guohai.iot.event.MainEventProducer;
 import org.guohai.iot.session.SessionManager;
 import org.guohai.iot.session.TrafficStatistics;
 import org.slf4j.Logger;
@@ -23,7 +24,8 @@ public class StatusPringHandler implements Runnable {
     @Autowired
     SessionManager sessionManager;
 
-
+    @Autowired
+    MainEventProducer mainEventProducer;
 
     /**
      * When an object implementing interface {@code Runnable} is used
@@ -43,7 +45,7 @@ public class StatusPringHandler implements Runnable {
                 "+---------+---------+------------+-----------+-------------+---------------+-------------+---------------+\n" +
                 "| session | channel | main queue | log queue |   in pack   |    in byte    |   out pack  |    out byte   |\n" +
                 "+---------+---------+------------+-----------+-------------+---------------+-------------+---------------+\n"+
-                "| "+String.format("%7d",sessionManager.getSessionCount())+" | "+String.format("%7d",sessionManager.getChannelCount())+" |    "+String.format("%7d",0)+" |   "+String.format("%7d",0)+" |     " +
+                "| "+String.format("%7d",sessionManager.getSessionCount())+" | "+String.format("%7d",sessionManager.getChannelCount())+" |    "+String.format("%7d",mainEventProducer.getRingBufferSize())+" |   "+String.format("%7d",0)+" |     " +
                         String.format("%7d", TrafficStatistics.getInPack())+" |     "+String.format("%9d", TrafficStatistics.getInByte())+" |     "+String.format("%7d", TrafficStatistics.getOutPack())+" |     "+String.format("%9d", TrafficStatistics.getOutByte())+" |\n"+
                 "+---------+---------+------------+-----------+-------------+---------------+-------------+---------------+\n");
     }

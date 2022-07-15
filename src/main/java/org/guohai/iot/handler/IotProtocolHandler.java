@@ -48,7 +48,7 @@ public class IotProtocolHandler extends MessageToMessageDecoder<ByteBuf> {
             TrafficStatistics.addInPack(msg.readableBytes());
             // 把接收到的流转写成string字符串
             String message = msg.toString(CharsetUtil.UTF_8);
-            log.info(message);
+            log.debug(message);
 
             // 向队列发布服务
             mainEventProducer.onData(ctx.channel(), message);

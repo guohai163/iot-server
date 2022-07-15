@@ -2,6 +2,7 @@
 from gevent import socket
 from locust import TaskSet, task, between, User, events
 import time
+import uuid
 
 
 class SocketClient(object):
@@ -34,7 +35,7 @@ class SocketClient(object):
 class UserBehavior(TaskSet):
     def on_start(self):
         # 该方法每用户启动时调用进行连接打开
-        self.client.connect(('192.168.6.81', 4100))
+        self.client.connect((self.user.host, self.user.port))
         self.send_login()
 
     def on_stop(self):
@@ -45,8 +46,8 @@ class UserBehavior(TaskSet):
         start_time = time.time()
 
         tx_no = int(round(start_time * 1000))
-        dataBody = '{"msgType": 10, "devId": "%d", "version":"1.0", "txNo": "%d", "sign": "xxxxx"}' % (
-            int(start_time), tx_no)
+        dataBody = '{"msgType": 10, "devId": "%s", "version":"1.0", "txNo": "%d", "sign": "xxxxx"}' % (
+            uuid.uuid1(), tx_no)
 
         # 接下来做实际的网络调用，并通过request_failure和request_success方法分别统计成功和失败的次数以及所消耗的时间
         try:
@@ -60,7 +61,7 @@ class UserBehavior(TaskSet):
             events.request_success.fire(request_type="iot_server", name="login", response_time=total_time,
                                         response_length=0)
 
-    @task(99)
+    @task(1)
     def send_20(self):
         start_time = time.time()
 
@@ -71,11 +72,11 @@ class UserBehavior(TaskSet):
             self.client.send(dataBody)
         except Exception as e:
             total_time = int((time.time() - start_time) * 1000)
-            events.request_failure.fire(request_type="iot_server", name="msg", response_time=total_time,
+            events.request_failure.fire(request_type="iot_server", name="msg_20", response_time=total_time,
                                         response_length=0, exception=e)
         else:
             total_time = int((time.time() - start_time) * 1000)
-            events.request_success.fire(request_type="iot_server", name="get", response_time=total_time,
+            events.request_success.fire(request_type="iot_server", name="msg_20", response_time=total_time,
                                         response_length=0)
 
 
@@ -93,4 +94,4 @@ class SocketUser(SocketLocust):
     # 目标端口
     port = 4100
     tasks = [UserBehavior]
-    wait_time = between(25, 35)
+    wait_time = between(50, 70)
