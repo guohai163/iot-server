@@ -5,6 +5,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import lombok.extern.slf4j.Slf4j;
+import org.guohai.iot.session.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,11 @@ import java.net.InetSocketAddress;
 @ChannelHandler.Sharable
 public class QuitHandler extends ChannelInboundHandlerAdapter {
 
+    SessionManager sessionManager;
 
+    public QuitHandler(SessionManager sessionManager){
+        this.sessionManager = sessionManager;
+    }
 
     /**
      * 会话退出时调用
@@ -30,7 +35,7 @@ public class QuitHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        log.info("会话退出", ctx.channel());
+        log.info("会话退出");
         cleanSession(ctx.channel());
     }
 
@@ -55,6 +60,6 @@ public class QuitHandler extends ChannelInboundHandlerAdapter {
      * @param channel
      */
     private void cleanSession(Channel channel){
-
+        sessionManager.removeSession(channel);
     }
 }

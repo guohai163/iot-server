@@ -1,6 +1,6 @@
 # coding: utf-8
 from gevent import socket
-from locust import TaskSet, task, between, Locust, events
+from locust import TaskSet, task, between, User, events
 import time
 
 
@@ -21,8 +21,8 @@ class SocketClient(object):
                 except Exception as e:
                     print(e)
             elif name == "send":
-                print(' '.join(hex(ord(i)) for i in args[0]))
-                conn.sendall(args[0])
+                print(args[0])
+                conn.sendall(args[0].encode())
                 data = conn.recv(1024)
                 print(data)
             elif name == "close":
@@ -34,7 +34,7 @@ class SocketClient(object):
 class UserBehavior(TaskSet):
     def on_start(self):
         # 该方法每用户启动时调用进行连接打开
-        self.client.connect((self.locust.host, self.locust.port))
+        self.client.connect(('192.168.6.81', 4100))
         self.send_login()
 
     def on_stop(self):
@@ -44,41 +44,44 @@ class UserBehavior(TaskSet):
     def send_login(self):
         start_time = time.time()
 
-        tx_no = int(round(start_time*1000))
-        dataBody = '{"msgType": 10, "devId": "%d", "version":"1.0", "txNo": "%d", "sign": "xxxxx"}' % ( int(start_time), tx_no)
+        tx_no = int(round(start_time * 1000))
+        dataBody = '{"msgType": 10, "devId": "%d", "version":"1.0", "txNo": "%d", "sign": "xxxxx"}' % (
+            int(start_time), tx_no)
 
         # 接下来做实际的网络调用，并通过request_failure和request_success方法分别统计成功和失败的次数以及所消耗的时间
         try:
             self.client.send(dataBody)
         except Exception as e:
             total_time = int((time.time() - start_time) * 1000)
-            events.request_failure.fire(request_type="earthtest", name="add", response_time=total_time,
+            events.request_failure.fire(request_type="iot_server", name="login", response_time=total_time,
                                         response_length=0, exception=e)
         else:
             total_time = int((time.time() - start_time) * 1000)
-            events.request_success.fire(request_type="earthtest", name="add", response_time=total_time,
+            events.request_success.fire(request_type="iot_server", name="login", response_time=total_time,
                                         response_length=0)
 
     @task(99)
-    def send_(self):
+    def send_20(self):
         start_time = time.time()
 
-        tx_no = int(round(start_time*1000))
+        tx_no = int(round(start_time * 1000))
         dataBody = ' {"msgType": 20, "txNo": "%d"}' % tx_no
 
         try:
             self.client.send(dataBody)
         except Exception as e:
             total_time = int((time.time() - start_time) * 1000)
-            events.request_failure.fire(request_type="earthtest", name="get", response_time=total_time,
+            events.request_failure.fire(request_type="iot_server", name="msg", response_time=total_time,
                                         response_length=0, exception=e)
         else:
             total_time = int((time.time() - start_time) * 1000)
-            events.request_success.fire(request_type="earthtest", name="get", response_time=total_time,
+            events.request_success.fire(request_type="iot_server", name="get", response_time=total_time,
                                         response_length=0)
 
 
-class SocketLocust(Locust):
+class SocketLocust(User):
+    abstract = True
+
     def __init__(self, *args, **kwargs):
         super(SocketLocust, self).__init__(*args, **kwargs)
         self.client = SocketClient()
@@ -89,5 +92,5 @@ class SocketUser(SocketLocust):
     host = "127.0.0.1"
     # 目标端口
     port = 4100
-    task_set = UserBehavior
-    wait_time = between(0.1, 1)
+    tasks = [UserBehavior]
+    wait_time = between(25, 35)

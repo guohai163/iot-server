@@ -41,7 +41,6 @@ public class LoginEventHandler implements IotEventHandler {
      * @param message 数据包
      */
     public void onEvent(Channel channel, String message) {
-        log.info("这是一个设备的登陆包");
         // TODO:验签，验签不通过的直接踢掉
 
         // 处理业务
