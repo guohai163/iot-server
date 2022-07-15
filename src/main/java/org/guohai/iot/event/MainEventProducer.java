@@ -30,7 +30,7 @@ public class MainEventProducer {
     /**
      * 初始化的队列大小，生产环境中尽量设置的大一些
      */
-    private final int INIT_LOGIC_EVENT_CAPACITY = 1024 ;
+    private final int INIT_LOGIC_EVENT_CAPACITY = 1024 * 10 ;
 
     public MainEventProducer(MainEventHandler mainEventHandler){
         this.mainEventHandler = mainEventHandler;
